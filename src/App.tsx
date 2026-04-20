@@ -14,6 +14,12 @@ import IssueDetail from "./pages/IssueDetail";
 import NewIssue from "./pages/NewIssue";
 import Notifications from "./pages/Notifications";
 import Admin from "./pages/Admin";
+import AdminInventory from "./pages/AdminInventory";
+import Borrow from "./pages/Borrow";
+import BorrowRequests from "./pages/BorrowRequests";
+import Resources from "./pages/Resources";
+import ResourceDetail from "./pages/ResourceDetail";
+import MyBookings from "./pages/MyBookings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
