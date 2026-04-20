@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { GraduationCap, LayoutDashboard, AlertCircle, Building2, LogOut, Bell, Plus } from "lucide-react";
+import { GraduationCap, LayoutDashboard, AlertCircle, Building2, LogOut, Bell, Plus, Package, CalendarRange } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
@@ -51,6 +51,8 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
   const nav = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/issues", label: "Issues", icon: AlertCircle },
+    { to: "/borrow", label: "Borrow", icon: Package },
+    { to: "/resources", label: "Resources", icon: CalendarRange },
     ...(isAdmin ? [{ to: "/admin", label: "Admin", icon: Building2 }] : []),
   ];
 

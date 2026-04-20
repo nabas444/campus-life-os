@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      borrow_requests: {
+        Row: {
+          borrowed_at: string | null
+          borrower_id: string
+          created_at: string
+          dorm_id: string
+          id: string
+          item_id: string
+          notes: string | null
+          requested_from: string
+          requested_until: string
+          returned_at: string | null
+          status: Database["public"]["Enums"]["borrow_status"]
+          updated_at: string
+        }
+        Insert: {
+          borrowed_at?: string | null
+          borrower_id: string
+          created_at?: string
+          dorm_id: string
+          id?: string
+          item_id: string
+          notes?: string | null
+          requested_from: string
+          requested_until: string
+          returned_at?: string | null
+          status?: Database["public"]["Enums"]["borrow_status"]
+          updated_at?: string
+        }
+        Update: {
+          borrowed_at?: string | null
+          borrower_id?: string
+          created_at?: string
+          dorm_id?: string
+          id?: string
+          item_id?: string
+          notes?: string | null
+          requested_from?: string
+          requested_until?: string
+          returned_at?: string | null
+          status?: Database["public"]["Enums"]["borrow_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "borrow_requests_dorm_id_fkey"
+            columns: ["dorm_id"]
+            isOneToOne: false
+            referencedRelation: "dorms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "borrow_requests_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dorm_invites: {
         Row: {
           code: string
@@ -208,6 +268,59 @@ export type Database = {
           },
         ]
       }
+      items: {
+        Row: {
+          category: Database["public"]["Enums"]["item_category"]
+          condition: string | null
+          created_at: string
+          description: string | null
+          dorm_id: string
+          id: string
+          image_url: string | null
+          is_available: boolean
+          max_loan_days: number
+          name: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["item_category"]
+          condition?: string | null
+          created_at?: string
+          description?: string | null
+          dorm_id: string
+          id?: string
+          image_url?: string | null
+          is_available?: boolean
+          max_loan_days?: number
+          name: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["item_category"]
+          condition?: string | null
+          created_at?: string
+          description?: string | null
+          dorm_id?: string
+          id?: string
+          image_url?: string | null
+          is_available?: boolean
+          max_loan_days?: number
+          name?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "items_dorm_id_fkey"
+            columns: ["dorm_id"]
+            isOneToOne: false
+            referencedRelation: "dorms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
@@ -268,6 +381,119 @@ export type Database = {
         }
         Relationships: []
       }
+      resource_bookings: {
+        Row: {
+          created_at: string
+          dorm_id: string
+          ends_at: string
+          id: string
+          purpose: string | null
+          resource_id: string
+          starts_at: string
+          status: Database["public"]["Enums"]["booking_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dorm_id: string
+          ends_at: string
+          id?: string
+          purpose?: string | null
+          resource_id: string
+          starts_at: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dorm_id?: string
+          ends_at?: string
+          id?: string
+          purpose?: string | null
+          resource_id?: string
+          starts_at?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_bookings_dorm_id_fkey"
+            columns: ["dorm_id"]
+            isOneToOne: false
+            referencedRelation: "dorms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_bookings_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resources: {
+        Row: {
+          capacity: number
+          category: Database["public"]["Enums"]["resource_category"]
+          close_hour: number
+          created_at: string
+          default_slot_minutes: number
+          description: string | null
+          dorm_id: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          max_booking_minutes: number
+          name: string
+          open_hour: number
+          updated_at: string
+        }
+        Insert: {
+          capacity?: number
+          category?: Database["public"]["Enums"]["resource_category"]
+          close_hour?: number
+          created_at?: string
+          default_slot_minutes?: number
+          description?: string | null
+          dorm_id: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          max_booking_minutes?: number
+          name: string
+          open_hour?: number
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number
+          category?: Database["public"]["Enums"]["resource_category"]
+          close_hour?: number
+          created_at?: string
+          default_slot_minutes?: number
+          description?: string | null
+          dorm_id?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          max_booking_minutes?: number
+          name?: string
+          open_hour?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resources_dorm_id_fkey"
+            columns: ["dorm_id"]
+            isOneToOne: false
+            referencedRelation: "dorms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -291,7 +517,16 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_trust_stats: {
+        Row: {
+          currently_overdue: number | null
+          late_returns: number | null
+          on_time_returns: number | null
+          total_borrows: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
@@ -313,6 +548,15 @@ export type Database = {
     }
     Enums: {
       app_role: "student" | "dorm_admin" | "system_admin"
+      booking_status: "confirmed" | "cancelled" | "completed" | "no_show"
+      borrow_status:
+        | "requested"
+        | "approved"
+        | "denied"
+        | "borrowed"
+        | "returned"
+        | "overdue"
+        | "cancelled"
       issue_category:
         | "utilities"
         | "maintenance"
@@ -321,11 +565,29 @@ export type Database = {
         | "other"
       issue_priority: "low" | "medium" | "high" | "urgent"
       issue_status: "pending" | "in_progress" | "resolved"
+      item_category:
+        | "electronics"
+        | "kitchen"
+        | "cleaning"
+        | "tools"
+        | "books"
+        | "sports"
+        | "games"
+        | "other"
       notification_type:
         | "issue_status"
         | "issue_new"
         | "announcement"
         | "system"
+      resource_category:
+        | "study_room"
+        | "kitchen"
+        | "laundry"
+        | "recreation"
+        | "charging"
+        | "locker"
+        | "equipment"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -454,6 +716,16 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["student", "dorm_admin", "system_admin"],
+      booking_status: ["confirmed", "cancelled", "completed", "no_show"],
+      borrow_status: [
+        "requested",
+        "approved",
+        "denied",
+        "borrowed",
+        "returned",
+        "overdue",
+        "cancelled",
+      ],
       issue_category: [
         "utilities",
         "maintenance",
@@ -463,11 +735,31 @@ export const Constants = {
       ],
       issue_priority: ["low", "medium", "high", "urgent"],
       issue_status: ["pending", "in_progress", "resolved"],
+      item_category: [
+        "electronics",
+        "kitchen",
+        "cleaning",
+        "tools",
+        "books",
+        "sports",
+        "games",
+        "other",
+      ],
       notification_type: [
         "issue_status",
         "issue_new",
         "announcement",
         "system",
+      ],
+      resource_category: [
+        "study_room",
+        "kitchen",
+        "laundry",
+        "recreation",
+        "charging",
+        "locker",
+        "equipment",
+        "other",
       ],
     },
   },
