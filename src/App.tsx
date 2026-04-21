@@ -20,6 +20,9 @@ import BorrowRequests from "./pages/BorrowRequests";
 import Resources from "./pages/Resources";
 import ResourceDetail from "./pages/ResourceDetail";
 import MyBookings from "./pages/MyBookings";
+import Announcements from "./pages/Announcements";
+import Feed from "./pages/Feed";
+import Chat from "./pages/Chat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -135,6 +138,38 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <MyBookings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/feed"
+              element={
+                <ProtectedRoute>
+                  <Feed />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/announcements"
+              element={
+                <ProtectedRoute>
+                  <Announcements />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/chat"
+              element={
+                <ProtectedRoute>
+                  <Chat />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/chat/:type/:id"
+              element={
+                <ProtectedRoute>
+                  <Chat />
                 </ProtectedRoute>
               }
             />
