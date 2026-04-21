@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcements: {
+        Row: {
+          author_id: string
+          body: string | null
+          created_at: string
+          dorm_id: string
+          id: string
+          pinned: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body?: string | null
+          created_at?: string
+          dorm_id: string
+          id?: string
+          pinned?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string | null
+          created_at?: string
+          dorm_id?: string
+          id?: string
+          pinned?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       borrow_requests: {
         Row: {
           borrowed_at: string | null
@@ -73,6 +106,108 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      chat_channel_members: {
+        Row: {
+          channel_id: string
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          channel_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          channel_id?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      chat_channels: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          dorm_id: string
+          id: string
+          kind: Database["public"]["Enums"]["channel_kind"]
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          dorm_id: string
+          id?: string
+          kind?: Database["public"]["Enums"]["channel_kind"]
+          name: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          dorm_id?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["channel_kind"]
+          name?: string
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          body: string
+          channel_id: string | null
+          created_at: string
+          id: string
+          sender_id: string
+          thread_id: string | null
+        }
+        Insert: {
+          body: string
+          channel_id?: string | null
+          created_at?: string
+          id?: string
+          sender_id: string
+          thread_id?: string | null
+        }
+        Update: {
+          body?: string
+          channel_id?: string | null
+          created_at?: string
+          id?: string
+          sender_id?: string
+          thread_id?: string | null
+        }
+        Relationships: []
+      }
+      direct_threads: {
+        Row: {
+          created_at: string
+          id: string
+          last_message_at: string
+          user_a: string
+          user_b: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          user_a: string
+          user_b: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          user_a?: string
+          user_b?: string
+        }
+        Relationships: []
       }
       dorm_invites: {
         Row: {
@@ -354,6 +489,30 @@ export type Database = {
         }
         Relationships: []
       }
+      presence_status: {
+        Row: {
+          id: string
+          message: string | null
+          state: Database["public"]["Enums"]["presence_state"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          message?: string | null
+          state?: Database["public"]["Enums"]["presence_state"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          message?: string | null
+          state?: Database["public"]["Enums"]["presence_state"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -529,6 +688,10 @@ export type Database = {
       }
     }
     Functions: {
+      can_access_channel: {
+        Args: { _channel_id: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -557,6 +720,7 @@ export type Database = {
         | "returned"
         | "overdue"
         | "cancelled"
+      channel_kind: "dorm_default" | "topic"
       issue_category:
         | "utilities"
         | "maintenance"
@@ -579,6 +743,7 @@ export type Database = {
         | "issue_new"
         | "announcement"
         | "system"
+      presence_state: "free" | "busy" | "studying" | "away" | "offline"
       resource_category:
         | "study_room"
         | "kitchen"
@@ -726,6 +891,7 @@ export const Constants = {
         "overdue",
         "cancelled",
       ],
+      channel_kind: ["dorm_default", "topic"],
       issue_category: [
         "utilities",
         "maintenance",
@@ -751,6 +917,7 @@ export const Constants = {
         "announcement",
         "system",
       ],
+      presence_state: ["free", "busy", "studying", "away", "offline"],
       resource_category: [
         "study_room",
         "kitchen",
