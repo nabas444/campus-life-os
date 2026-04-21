@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Copy, KeyRound, Loader2, Plus, Users } from "lucide-react";
+import { Building2, Copy, KeyRound, Loader2, Package, Plus, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Navigate } from "react-router-dom";
 import type { Database } from "@/integrations/supabase/types";
@@ -278,6 +278,23 @@ const Admin = () => {
           </p>
         </Card>
       )}
+
+      <Card className="mt-6 p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10">
+              <Package className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-display text-lg font-semibold text-primary">Inventory & Resources</h3>
+              <p className="text-sm text-muted-foreground">Manage items and shared spaces</p>
+            </div>
+          </div>
+          <Button variant="hero" onClick={() => window.location.href = '/admin/inventory'}>
+            Manage
+          </Button>
+        </div>
+      </Card>
     </AppShell>
   );
 };

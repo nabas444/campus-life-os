@@ -90,6 +90,54 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/inventory"
+              element={
+                <ProtectedRoute>
+                  <AdminInventory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/borrow"
+              element={
+                <ProtectedRoute>
+                  <Borrow />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/borrow/requests"
+              element={
+                <ProtectedRoute>
+                  <BorrowRequests />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/resources"
+              element={
+                <ProtectedRoute>
+                  <Resources />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/resources/:id"
+              element={
+                <ProtectedRoute>
+                  <ResourceDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/resources/my"
+              element={
+                <ProtectedRoute>
+                  <MyBookings />
+                </ProtectedRoute>
+              }
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
