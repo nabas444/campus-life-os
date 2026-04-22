@@ -489,6 +489,124 @@ export type Database = {
         }
         Relationships: []
       }
+      outage_reports: {
+        Row: {
+          category_id: string
+          created_at: string
+          dorm_id: string
+          id: string
+          note: string | null
+          outage_id: string | null
+          reported_at: string
+          reporter_id: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          dorm_id: string
+          id?: string
+          note?: string | null
+          outage_id?: string | null
+          reported_at?: string
+          reporter_id: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          dorm_id?: string
+          id?: string
+          note?: string | null
+          outage_id?: string | null
+          reported_at?: string
+          reporter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outage_reports_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "utility_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "outage_reports_dorm_id_fkey"
+            columns: ["dorm_id"]
+            isOneToOne: false
+            referencedRelation: "dorms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "outage_reports_outage_id_fkey"
+            columns: ["outage_id"]
+            isOneToOne: false
+            referencedRelation: "outages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      outages: {
+        Row: {
+          category_id: string
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          created_by: string
+          dorm_id: string
+          ended_at: string | null
+          id: string
+          severity: Database["public"]["Enums"]["outage_severity"]
+          started_at: string
+          status: Database["public"]["Enums"]["outage_status"]
+          summary: string | null
+          updated_at: string
+        }
+        Insert: {
+          category_id: string
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          created_by: string
+          dorm_id: string
+          ended_at?: string | null
+          id?: string
+          severity?: Database["public"]["Enums"]["outage_severity"]
+          started_at?: string
+          status?: Database["public"]["Enums"]["outage_status"]
+          summary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          created_by?: string
+          dorm_id?: string
+          ended_at?: string | null
+          id?: string
+          severity?: Database["public"]["Enums"]["outage_severity"]
+          started_at?: string
+          status?: Database["public"]["Enums"]["outage_status"]
+          summary?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outages_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "utility_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "outages_dorm_id_fkey"
+            columns: ["dorm_id"]
+            isOneToOne: false
+            referencedRelation: "dorms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       presence_status: {
         Row: {
           id: string
@@ -674,6 +792,53 @@ export type Database = {
         }
         Relationships: []
       }
+      utility_categories: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          dorm_id: string
+          icon: string | null
+          id: string
+          is_active: boolean
+          kind: Database["public"]["Enums"]["utility_kind"]
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          dorm_id: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: Database["public"]["Enums"]["utility_kind"]
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          dorm_id?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: Database["public"]["Enums"]["utility_kind"]
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "utility_categories_dorm_id_fkey"
+            columns: ["dorm_id"]
+            isOneToOne: false
+            referencedRelation: "dorms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       user_trust_stats: {
@@ -743,6 +908,8 @@ export type Database = {
         | "issue_new"
         | "announcement"
         | "system"
+      outage_severity: "minor" | "partial" | "major"
+      outage_status: "reported" | "confirmed" | "resolved" | "dismissed"
       presence_state: "free" | "busy" | "studying" | "away" | "offline"
       resource_category:
         | "study_room"
@@ -751,6 +918,15 @@ export type Database = {
         | "recreation"
         | "charging"
         | "locker"
+        | "equipment"
+        | "other"
+      utility_kind:
+        | "electricity"
+        | "water"
+        | "internet"
+        | "gas"
+        | "heating"
+        | "security"
         | "equipment"
         | "other"
     }
@@ -917,6 +1093,8 @@ export const Constants = {
         "announcement",
         "system",
       ],
+      outage_severity: ["minor", "partial", "major"],
+      outage_status: ["reported", "confirmed", "resolved", "dismissed"],
       presence_state: ["free", "busy", "studying", "away", "offline"],
       resource_category: [
         "study_room",
@@ -925,6 +1103,16 @@ export const Constants = {
         "recreation",
         "charging",
         "locker",
+        "equipment",
+        "other",
+      ],
+      utility_kind: [
+        "electricity",
+        "water",
+        "internet",
+        "gas",
+        "heating",
+        "security",
         "equipment",
         "other",
       ],
