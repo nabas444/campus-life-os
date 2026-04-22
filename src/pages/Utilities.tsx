@@ -30,6 +30,7 @@ import {
   Loader2,
   Plus,
   ShieldAlert,
+  Users,
   Wifi,
   Zap,
   Activity,
