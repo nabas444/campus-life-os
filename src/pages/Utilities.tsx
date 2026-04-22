@@ -163,6 +163,11 @@ const Utilities = () => {
       note: null,
     });
     if (error) {
+      // 23505 = unique_violation — race-condition duplicate, treat as already confirmed
+      if ((error as { code?: string }).code === "23505") {
+        toast.info("You've already confirmed this outage");
+        return;
+      }
       toast.error(error.message);
       return;
     }
