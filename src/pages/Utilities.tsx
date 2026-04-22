@@ -174,6 +174,23 @@ const Utilities = () => {
     toast.success("Thanks — your report was added");
   };
 
+  const undoMeToo = async (outage: Outage) => {
+    if (!user) return;
+    const mine = reports.find(
+      (r) => r.outage_id === outage.id && r.reporter_id === user.id,
+    );
+    if (!mine) return;
+    const { error } = await supabase
+      .from("outage_reports")
+      .delete()
+      .eq("id", mine.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Confirmation removed");
+  };
+
   if (!primaryDormId) {
     return (
       <AppShell>
