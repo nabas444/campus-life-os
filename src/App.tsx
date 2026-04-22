@@ -23,6 +23,8 @@ import MyBookings from "./pages/MyBookings";
 import Announcements from "./pages/Announcements";
 import Feed from "./pages/Feed";
 import Chat from "./pages/Chat";
+import Utilities from "./pages/Utilities";
+import AdminUtilities from "./pages/AdminUtilities";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -170,6 +172,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Chat />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/utilities"
+              element={
+                <ProtectedRoute>
+                  <Utilities />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/utilities"
+              element={
+                <ProtectedRoute>
+                  <AdminUtilities />
                 </ProtectedRoute>
               }
             />
