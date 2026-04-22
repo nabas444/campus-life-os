@@ -30,6 +30,7 @@ import {
   Loader2,
   Plus,
   ShieldAlert,
+  Users,
   Wifi,
   Zap,
   Activity,
@@ -144,6 +145,30 @@ const Utilities = () => {
     setReportFor(null);
   };
 
+  const meToo = async (outage: Outage) => {
+    if (!user || !primaryDormId) return;
+    // Prevent duplicates: if user already piled on this outage, no-op
+    const already = reports.some(
+      (r) => r.outage_id === outage.id && r.reporter_id === user.id,
+    );
+    if (already) {
+      toast.info("You've already confirmed this outage");
+      return;
+    }
+    const { error } = await supabase.from("outage_reports").insert({
+      dorm_id: primaryDormId,
+      category_id: outage.category_id,
+      reporter_id: user.id,
+      outage_id: outage.id,
+      note: null,
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Thanks — your report was added");
+  };
+
   if (!primaryDormId) {
     return (
       <AppShell>
@@ -186,6 +211,11 @@ const Utilities = () => {
             {categories.map((cat) => {
               const active = activeOutages.find((o) => o.category_id === cat.id);
               const reportsForCat = recentReports24h.filter((r) => r.category_id === cat.id);
+              const pileOnReports = active
+                ? reports.filter((r) => r.outage_id === active.id)
+                : [];
+              const pileOnCount = pileOnReports.length;
+              const userPiledOn = !!user && pileOnReports.some((r) => r.reporter_id === user.id);
               const Icon = KIND_ICON[cat.kind];
               return (
                 <Card
@@ -221,9 +251,17 @@ const Utilities = () => {
 
                   {active ? (
                     <div className="mt-3 rounded-md bg-destructive/5 p-3 text-sm">
-                      <div className="flex items-center gap-1.5 font-medium text-destructive">
-                        <AlertTriangle className="h-3.5 w-3.5" />
-                        Outage · {durationLabel(active.started_at)}
+                      <div className="flex items-center justify-between gap-2 font-medium text-destructive">
+                        <span className="flex items-center gap-1.5">
+                          <AlertTriangle className="h-3.5 w-3.5" />
+                          Outage · {durationLabel(active.started_at)}
+                        </span>
+                        {pileOnCount > 0 && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-destructive/15 px-2 py-0.5 text-[11px] font-semibold">
+                            <Users className="h-3 w-3" />
+                            {pileOnCount}
+                          </span>
+                        )}
                       </div>
                       {active.summary && (
                         <p className="mt-1 text-xs text-muted-foreground">{active.summary}</p>
@@ -238,15 +276,32 @@ const Utilities = () => {
                     <p className="mt-3 text-xs text-muted-foreground">All systems normal.</p>
                   )}
 
-                  <Button
-                    size="sm"
-                    variant={active ? "outline" : "soft"}
-                    className="mt-4 w-full"
-                    onClick={() => setReportFor(cat)}
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    Report a problem
-                  </Button>
+                  {active ? (
+                    <Button
+                      size="sm"
+                      variant={userPiledOn ? "outline" : "destructive"}
+                      className="mt-4 w-full"
+                      disabled={userPiledOn}
+                      onClick={() => meToo(active)}
+                    >
+                      <Users className="h-3.5 w-3.5" />
+                      {userPiledOn
+                        ? "You confirmed this"
+                        : pileOnCount > 0
+                          ? `Me too (${pileOnCount})`
+                          : "Me too — I'm affected"}
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="soft"
+                      className="mt-4 w-full"
+                      onClick={() => setReportFor(cat)}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      Report a problem
+                    </Button>
+                  )}
                 </Card>
               );
             })}
