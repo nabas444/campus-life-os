@@ -174,6 +174,23 @@ const Utilities = () => {
     toast.success("Thanks — your report was added");
   };
 
+  const undoMeToo = async (outage: Outage) => {
+    if (!user) return;
+    const mine = reports.find(
+      (r) => r.outage_id === outage.id && r.reporter_id === user.id,
+    );
+    if (!mine) return;
+    const { error } = await supabase
+      .from("outage_reports")
+      .delete()
+      .eq("id", mine.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Confirmation removed");
+  };
+
   if (!primaryDormId) {
     return (
       <AppShell>
@@ -282,20 +299,41 @@ const Utilities = () => {
                   )}
 
                   {active ? (
-                    <Button
-                      size="sm"
-                      variant={userPiledOn ? "outline" : "destructive"}
-                      className="mt-4 w-full"
-                      disabled={userPiledOn}
-                      onClick={() => meToo(active)}
-                    >
-                      <Users className="h-3.5 w-3.5" />
-                      {userPiledOn
-                        ? "You confirmed this"
-                        : pileOnCount > 0
+                    userPiledOn ? (
+                      <div className="mt-4 flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="flex-1"
+                          disabled
+                        >
+                          <Users className="h-3.5 w-3.5" />
+                          You confirmed{pileOnCount > 1 ? ` (${pileOnCount})` : ""}
+                        </Button>
+                        {active.status === "reported" && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => undoMeToo(active)}
+                            title="Undo my confirmation"
+                          >
+                            Undo
+                          </Button>
+                        )}
+                      </div>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="mt-4 w-full"
+                        onClick={() => meToo(active)}
+                      >
+                        <Users className="h-3.5 w-3.5" />
+                        {pileOnCount > 0
                           ? `Me too (${pileOnCount})`
                           : "Me too — I'm affected"}
-                    </Button>
+                      </Button>
+                    )
                   ) : (
                     <Button
                       size="sm"
