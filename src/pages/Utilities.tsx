@@ -144,6 +144,30 @@ const Utilities = () => {
     setReportFor(null);
   };
 
+  const meToo = async (outage: Outage) => {
+    if (!user || !primaryDormId) return;
+    // Prevent duplicates: if user already piled on this outage, no-op
+    const already = reports.some(
+      (r) => r.outage_id === outage.id && r.reporter_id === user.id,
+    );
+    if (already) {
+      toast.info("You've already confirmed this outage");
+      return;
+    }
+    const { error } = await supabase.from("outage_reports").insert({
+      dorm_id: primaryDormId,
+      category_id: outage.category_id,
+      reporter_id: user.id,
+      outage_id: outage.id,
+      note: null,
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Thanks — your report was added");
+  };
+
   if (!primaryDormId) {
     return (
       <AppShell>
