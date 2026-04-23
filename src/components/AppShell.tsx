@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { GraduationCap, LayoutDashboard, AlertCircle, Building2, LogOut, Bell, Plus, Package, CalendarRange, Activity, MessagesSquare, Megaphone, Zap } from "lucide-react";
+import { GraduationCap, LayoutDashboard, AlertCircle, Building2, LogOut, Bell, Plus, Package, CalendarRange, Activity, MessagesSquare, Megaphone, Zap, ListChecks } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
@@ -55,6 +55,7 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
     { to: "/issues", label: "Issues", icon: AlertCircle },
     { to: "/announcements", label: "News", icon: Megaphone },
     { to: "/utilities", label: "Utilities", icon: Zap },
+    { to: "/todos", label: "Todos", icon: ListChecks },
     { to: "/borrow", label: "Borrow", icon: Package },
     { to: "/resources", label: "Resources", icon: CalendarRange },
     ...(isAdmin ? [{ to: "/admin", label: "Admin", icon: Building2 }] : []),

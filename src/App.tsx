@@ -25,6 +25,7 @@ import Feed from "./pages/Feed";
 import Chat from "./pages/Chat";
 import Utilities from "./pages/Utilities";
 import AdminUtilities from "./pages/AdminUtilities";
+import Todos from "./pages/Todos";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -188,6 +189,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <AdminUtilities />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/todos"
+              element={
+                <ProtectedRoute>
+                  <Todos />
                 </ProtectedRoute>
               }
             />
