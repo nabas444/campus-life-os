@@ -26,6 +26,7 @@ import Chat from "./pages/Chat";
 import Utilities from "./pages/Utilities";
 import AdminUtilities from "./pages/AdminUtilities";
 import Todos from "./pages/Todos";
+import Schedule from "./pages/Schedule";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
