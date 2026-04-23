@@ -201,6 +201,14 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/schedule"
+              element={
+                <ProtectedRoute>
+                  <Schedule />
+                </ProtectedRoute>
+              }
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
