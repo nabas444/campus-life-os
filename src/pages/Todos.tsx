@@ -95,7 +95,7 @@ const Todos = () => {
     if (!user) return;
     let cancelled = false;
     const load = async () => {
-      const queries: Promise<unknown>[] = [
+      const [listsRes, itemsRes] = await Promise.all([
         supabase
           .from("todo_lists")
           .select("*")
@@ -105,30 +105,25 @@ const Todos = () => {
           .select("*")
           .order("position", { ascending: true })
           .order("created_at", { ascending: true }),
-      ];
+      ]);
+      type MemRow = { user_id: string; profiles: { full_name: string | null } | null };
+      let memRows: MemRow[] = [];
       if (primaryDormId) {
-        queries.push(
-          supabase
-            .from("dorm_members")
-            .select("user_id, profiles:profiles!inner(full_name)")
-            .eq("dorm_id", primaryDormId),
-        );
+        const { data } = await supabase
+          .from("dorm_members")
+          .select("user_id, profiles:profiles!inner(full_name)")
+          .eq("dorm_id", primaryDormId);
+        memRows = (data ?? []) as unknown as MemRow[];
       }
-      const results = await Promise.all(queries);
       if (cancelled) return;
-      const ls = (results[0] as { data: TodoList[] | null }).data ?? [];
-      const its = (results[1] as { data: TodoItem[] | null }).data ?? [];
-      setLists(ls);
-      setItems(its);
-      if (results[2]) {
-        const mems =
-          ((results[2] as { data: { user_id: string; profiles: { full_name: string | null } | null }[] | null })
-            .data ?? []).map((m) => ({
-            user_id: m.user_id,
-            full_name: m.profiles?.full_name ?? null,
-          }));
-        setMembers(mems);
-      }
+      setLists((listsRes.data ?? []) as TodoList[]);
+      setItems((itemsRes.data ?? []) as TodoItem[]);
+      setMembers(
+        memRows.map((m) => ({
+          user_id: m.user_id,
+          full_name: m.profiles?.full_name ?? null,
+        })),
+      );
       setLoading(false);
     };
     load();
