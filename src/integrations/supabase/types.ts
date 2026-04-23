@@ -771,6 +771,103 @@ export type Database = {
           },
         ]
       }
+      todo_items: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          created_by: string
+          due_at: string | null
+          id: string
+          list_id: string
+          notes: string | null
+          position: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          created_by: string
+          due_at?: string | null
+          id?: string
+          list_id: string
+          notes?: string | null
+          position?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          created_by?: string
+          due_at?: string | null
+          id?: string
+          list_id?: string
+          notes?: string | null
+          position?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_items_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "todo_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      todo_lists: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          dorm_id: string | null
+          id: string
+          name: string
+          owner_id: string
+          scope: Database["public"]["Enums"]["todo_scope"]
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          dorm_id?: string | null
+          id?: string
+          name: string
+          owner_id: string
+          scope: Database["public"]["Enums"]["todo_scope"]
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          dorm_id?: string | null
+          id?: string
+          name?: string
+          owner_id?: string
+          scope?: Database["public"]["Enums"]["todo_scope"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_lists_dorm_id_fkey"
+            columns: ["dorm_id"]
+            isOneToOne: false
+            referencedRelation: "dorms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -920,6 +1017,7 @@ export type Database = {
         | "locker"
         | "equipment"
         | "other"
+      todo_scope: "personal" | "dorm"
       utility_kind:
         | "electricity"
         | "water"
@@ -1106,6 +1204,7 @@ export const Constants = {
         "equipment",
         "other",
       ],
+      todo_scope: ["personal", "dorm"],
       utility_kind: [
         "electricity",
         "water",
