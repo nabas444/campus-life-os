@@ -27,6 +27,8 @@ import Utilities from "./pages/Utilities";
 import AdminUtilities from "./pages/AdminUtilities";
 import Todos from "./pages/Todos";
 import Schedule from "./pages/Schedule";
+import Profile from "./pages/Profile";
+import Directory from "./pages/Directory";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -206,6 +208,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Schedule />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/directory"
+              element={
+                <ProtectedRoute>
+                  <Directory />
                 </ProtectedRoute>
               }
             />

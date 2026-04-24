@@ -9,8 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { GraduationCap, LayoutDashboard, AlertCircle, Building2, LogOut, Bell, Plus, Package, CalendarRange, Activity, MessagesSquare, Megaphone, Zap, ListChecks, CalendarDays } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { GraduationCap, LayoutDashboard, AlertCircle, Building2, LogOut, Bell, Plus, Package, CalendarRange, Activity, MessagesSquare, Megaphone, Zap, ListChecks, CalendarDays, Users, UserCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,17 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [unread, setUnread] = useState(0);
+  const [myAvatar, setMyAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("avatar_url")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => setMyAvatar(data?.avatar_url ?? null));
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -52,6 +63,7 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/feed", label: "Activity", icon: Activity },
     { to: "/chat", label: "Chat", icon: MessagesSquare },
+    { to: "/directory", label: "People", icon: Users },
     { to: "/issues", label: "Issues", icon: AlertCircle },
     { to: "/announcements", label: "News", icon: Megaphone },
     { to: "/utilities", label: "Utilities", icon: Zap },
@@ -121,6 +133,7 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar className="h-9 w-9 border-2 border-primary/10">
+                    {myAvatar && <AvatarImage src={myAvatar} alt="You" />}
                     <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
                       {initials}
                     </AvatarFallback>
@@ -137,6 +150,11 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
                     </div>
                   )}
                 </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                  <UserCircle className="mr-2 h-4 w-4" />
+                  Edit profile
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 {nav.map((item) => (
                   <DropdownMenuItem key={item.to} onClick={() => navigate(item.to)} className="md:hidden">
