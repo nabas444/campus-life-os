@@ -133,6 +133,7 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar className="h-9 w-9 border-2 border-primary/10">
+                    {myAvatar && <AvatarImage src={myAvatar} alt="You" />}
                     <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
                       {initials}
                     </AvatarFallback>
@@ -149,6 +150,11 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
                     </div>
                   )}
                 </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                  <UserCircle className="mr-2 h-4 w-4" />
+                  Edit profile
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 {nav.map((item) => (
                   <DropdownMenuItem key={item.to} onClick={() => navigate(item.to)} className="md:hidden">
