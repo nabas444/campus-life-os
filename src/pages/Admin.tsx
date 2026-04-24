@@ -212,6 +212,79 @@ const Admin = () => {
         )}
       </div>
 
+      {isSystemAdmin && (
+        <Card className="mb-6 p-6">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent-soft text-accent">
+                <Crown className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-semibold text-primary">
+                  Representative keys
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  One-shot keys that let a user create and lead a new dorm
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="flex-1 space-y-1.5" style={{ minWidth: 180 }}>
+              <Label htmlFor="rep-note">Note (optional)</Label>
+              <Input
+                id="rep-note"
+                value={repTokenNote}
+                onChange={(e) => setRepTokenNote(e.target.value)}
+                placeholder="e.g. For Sterling Block A"
+              />
+            </div>
+            <Button onClick={mintRepToken} variant="hero" disabled={repTokenLoading}>
+              {repTokenLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              <KeyRound className="h-4 w-4" /> Generate key
+            </Button>
+          </div>
+
+          {repTokens.length > 0 && (
+            <div className="mt-5 space-y-2">
+              {repTokens.slice(0, 6).map((t) => (
+                <div
+                  key={t.id}
+                  className="flex items-center justify-between gap-2 rounded-md border border-border bg-secondary/30 p-2.5"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <code
+                        className={`font-mono text-sm font-semibold ${
+                          t.used_at ? "text-muted-foreground line-through" : "text-primary"
+                        }`}
+                      >
+                        {t.code}
+                      </code>
+                      {t.used_at ? (
+                        <Badge variant="outline">Used</Badge>
+                      ) : (
+                        <Badge className="bg-accent text-accent-foreground">Available</Badge>
+                      )}
+                    </div>
+                    {t.note && (
+                      <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                        {t.note}
+                      </div>
+                    )}
+                  </div>
+                  {!t.used_at && (
+                    <Button size="icon" variant="ghost" onClick={() => copyCode(t.code)}>
+                      <Copy className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      )}
+
       {loading ? (
         <div className="flex justify-center py-16">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
