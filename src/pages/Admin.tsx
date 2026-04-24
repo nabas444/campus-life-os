@@ -37,9 +37,12 @@ const Admin = () => {
   const [dorms, setDorms] = useState<Dorm[]>([]);
   const [invites, setInvites] = useState<Invite[]>([]);
   const [memberCounts, setMemberCounts] = useState<Record<string, number>>({});
+  const [repTokens, setRepTokens] = useState<RepToken[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState<string | null>(null);
+  const [repTokenNote, setRepTokenNote] = useState("");
+  const [repTokenLoading, setRepTokenLoading] = useState(false);
 
   useEffect(() => {
     if (!user) return;
