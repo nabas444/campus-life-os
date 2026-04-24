@@ -10,15 +10,22 @@ import { GraduationCap, Loader2, Building2, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 
 const DormOnboarding = () => {
-  const { user, dorms, refresh, signOut, isSystemAdmin } = useAuth();
+  const { user, dorms, refresh, signOut, isAdmin, isSystemAdmin } = useAuth();
   const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [room, setRoom] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (dorms.length > 0) navigate("/dashboard", { replace: true });
-  }, [dorms, navigate]);
+    if (dorms.length > 0) {
+      navigate("/dashboard", { replace: true });
+      return;
+    }
+    // Admins don't need an invite code — send them straight in.
+    if (isAdmin) {
+      navigate(isSystemAdmin ? "/admin" : "/dashboard", { replace: true });
+    }
+  }, [dorms, isAdmin, isSystemAdmin, navigate]);
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,14 +146,14 @@ const DormOnboarding = () => {
             </Button>
           </form>
 
-          {isSystemAdmin && (
+          {isAdmin && (
             <div className="mt-6 rounded-md border border-dashed border-border bg-secondary/40 p-4 text-sm">
-              You're a <strong>system admin</strong>.{" "}
+              You're an <strong>{isSystemAdmin ? "system admin" : "dorm admin"}</strong> — no invite code needed.{" "}
               <button
-                onClick={() => navigate("/admin")}
+                onClick={() => navigate(isSystemAdmin ? "/admin" : "/dashboard")}
                 className="font-medium text-accent underline-offset-2 hover:underline"
               >
-                Skip and go to admin →
+                Skip and continue →
               </button>
             </div>
           )}
