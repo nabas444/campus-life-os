@@ -59,7 +59,9 @@ const Auth = () => {
       return;
     }
     toast.success("Welcome to Campus Life OS!");
-    navigate("/onboarding/dorm", { replace: true });
+    // New accounts default to "student" role and need an invite code.
+    // Admins (promoted later) will skip onboarding via Index/DormOnboarding logic.
+    navigate("/", { replace: true });
   };
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
