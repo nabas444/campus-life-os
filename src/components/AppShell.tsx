@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { GraduationCap, LayoutDashboard, AlertCircle, Building2, LogOut, Bell, Plus, Package, CalendarRange, Activity, MessagesSquare, Megaphone, Zap, ListChecks, CalendarDays } from "lucide-react";
+import { GraduationCap, LayoutDashboard, AlertCircle, Building2, LogOut, Bell, Plus, Package, CalendarRange, Activity, MessagesSquare, Megaphone, Zap, ListChecks, CalendarDays, Users, UserCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
