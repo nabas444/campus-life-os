@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { GraduationCap, LayoutDashboard, AlertCircle, Building2, LogOut, Bell, Plus, Package, CalendarRange, Activity, MessagesSquare, Megaphone, Zap, ListChecks, CalendarDays, Users, UserCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +21,17 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [unread, setUnread] = useState(0);
+  const [myAvatar, setMyAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("avatar_url")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => setMyAvatar(data?.avatar_url ?? null));
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
