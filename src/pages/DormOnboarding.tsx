@@ -10,15 +10,22 @@ import { GraduationCap, Loader2, Building2, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 
 const DormOnboarding = () => {
-  const { user, dorms, refresh, signOut, isSystemAdmin } = useAuth();
+  const { user, dorms, refresh, signOut, isAdmin, isSystemAdmin } = useAuth();
   const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [room, setRoom] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (dorms.length > 0) navigate("/dashboard", { replace: true });
-  }, [dorms, navigate]);
+    if (dorms.length > 0) {
+      navigate("/dashboard", { replace: true });
+      return;
+    }
+    // Admins don't need an invite code — send them straight in.
+    if (isAdmin) {
+      navigate(isSystemAdmin ? "/admin" : "/dashboard", { replace: true });
+    }
+  }, [dorms, isAdmin, isSystemAdmin, navigate]);
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
