@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Copy, KeyRound, Loader2, Package, Plus, Users } from "lucide-react";
+import { Building2, Copy, Crown, KeyRound, Loader2, Package, Plus, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Navigate } from "react-router-dom";
 import type { Database } from "@/integrations/supabase/types";
