@@ -52,6 +52,7 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/feed", label: "Activity", icon: Activity },
     { to: "/chat", label: "Chat", icon: MessagesSquare },
+    { to: "/directory", label: "People", icon: Users },
     { to: "/issues", label: "Issues", icon: AlertCircle },
     { to: "/announcements", label: "News", icon: Megaphone },
     { to: "/utilities", label: "Utilities", icon: Zap },
