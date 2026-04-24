@@ -23,22 +23,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Copy, KeyRound, Loader2, Package, Plus, Users } from "lucide-react";
+import { Building2, Copy, Crown, KeyRound, Loader2, Package, Plus, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Navigate } from "react-router-dom";
 import type { Database } from "@/integrations/supabase/types";
 
 type Dorm = Database["public"]["Tables"]["dorms"]["Row"];
 type Invite = Database["public"]["Tables"]["dorm_invites"]["Row"];
+type RepToken = Database["public"]["Tables"]["rep_tokens"]["Row"];
 
 const Admin = () => {
   const { user, isAdmin, isSystemAdmin, dorms: myDorms, refresh } = useAuth();
   const [dorms, setDorms] = useState<Dorm[]>([]);
   const [invites, setInvites] = useState<Invite[]>([]);
   const [memberCounts, setMemberCounts] = useState<Record<string, number>>({});
+  const [repTokens, setRepTokens] = useState<RepToken[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState<string | null>(null);
+  const [repTokenNote, setRepTokenNote] = useState("");
+  const [repTokenLoading, setRepTokenLoading] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -60,16 +64,48 @@ const Admin = () => {
         });
         setMemberCounts(counts);
       }
+
+      if (isSystemAdmin) {
+        const { data: tokens } = await supabase
+          .from("rep_tokens")
+          .select("*")
+          .order("created_at", { ascending: false });
+        setRepTokens((tokens ?? []) as RepToken[]);
+      }
+
       setLoading(false);
     };
     load();
-  }, [user]);
+  }, [user, isSystemAdmin]);
 
   if (!isAdmin) return <Navigate to="/dashboard" replace />;
 
   const generateCode = (prefix: string) => {
     const rand = Math.random().toString(36).slice(2, 8).toUpperCase();
     return `${prefix.slice(0, 8).toUpperCase().replace(/[^A-Z0-9]/g, "")}-${rand}`;
+  };
+
+  const mintRepToken = async () => {
+    if (!user) return;
+    setRepTokenLoading(true);
+    const code = generateCode("REP");
+    const { data, error } = await supabase
+      .from("rep_tokens")
+      .insert({
+        code,
+        created_by: user.id,
+        note: repTokenNote.trim() || null,
+      })
+      .select()
+      .single();
+    setRepTokenLoading(false);
+    if (error || !data) {
+      toast.error(error?.message ?? "Could not mint key");
+      return;
+    }
+    setRepTokens((prev) => [data as RepToken, ...prev]);
+    setRepTokenNote("");
+    toast.success("Representative key created");
   };
 
   const createDorm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -175,6 +211,79 @@ const Admin = () => {
           </Dialog>
         )}
       </div>
+
+      {isSystemAdmin && (
+        <Card className="mb-6 p-6">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent-soft text-accent">
+                <Crown className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-semibold text-primary">
+                  Representative keys
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  One-shot keys that let a user create and lead a new dorm
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="flex-1 space-y-1.5" style={{ minWidth: 180 }}>
+              <Label htmlFor="rep-note">Note (optional)</Label>
+              <Input
+                id="rep-note"
+                value={repTokenNote}
+                onChange={(e) => setRepTokenNote(e.target.value)}
+                placeholder="e.g. For Sterling Block A"
+              />
+            </div>
+            <Button onClick={mintRepToken} variant="hero" disabled={repTokenLoading}>
+              {repTokenLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              <KeyRound className="h-4 w-4" /> Generate key
+            </Button>
+          </div>
+
+          {repTokens.length > 0 && (
+            <div className="mt-5 space-y-2">
+              {repTokens.slice(0, 6).map((t) => (
+                <div
+                  key={t.id}
+                  className="flex items-center justify-between gap-2 rounded-md border border-border bg-secondary/30 p-2.5"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <code
+                        className={`font-mono text-sm font-semibold ${
+                          t.used_at ? "text-muted-foreground line-through" : "text-primary"
+                        }`}
+                      >
+                        {t.code}
+                      </code>
+                      {t.used_at ? (
+                        <Badge variant="outline">Used</Badge>
+                      ) : (
+                        <Badge className="bg-accent text-accent-foreground">Available</Badge>
+                      )}
+                    </div>
+                    {t.note && (
+                      <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                        {t.note}
+                      </div>
+                    )}
+                  </div>
+                  {!t.used_at && (
+                    <Button size="icon" variant="ghost" onClick={() => copyCode(t.code)}>
+                      <Copy className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      )}
 
       {loading ? (
         <div className="flex justify-center py-16">

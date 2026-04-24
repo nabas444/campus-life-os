@@ -371,27 +371,33 @@ export type Database = {
       dorms: {
         Row: {
           address: string | null
+          block: string | null
           created_at: string
           created_by: string | null
           description: string | null
+          dorm_number: string | null
           id: string
           name: string
           updated_at: string
         }
         Insert: {
           address?: string | null
+          block?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
+          dorm_number?: string | null
           id?: string
           name: string
           updated_at?: string
         }
         Update: {
           address?: string | null
+          block?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
+          dorm_number?: string | null
           id?: string
           name?: string
           updated_at?: string
@@ -744,6 +750,42 @@ export type Database = {
         }
         Relationships: []
       }
+      rep_tokens: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string
+          dorm_id: string | null
+          expires_at: string | null
+          id: string
+          note: string | null
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by: string
+          dorm_id?: string | null
+          expires_at?: string | null
+          id?: string
+          note?: string | null
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string
+          dorm_id?: string | null
+          expires_at?: string | null
+          id?: string
+          note?: string | null
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: []
+      }
       resource_bookings: {
         Row: {
           created_at: string
@@ -1054,6 +1096,15 @@ export type Database = {
       is_dorm_member: {
         Args: { _dorm_id: string; _user_id: string }
         Returns: boolean
+      }
+      redeem_rep_token: {
+        Args: {
+          _block: string
+          _code: string
+          _dorm_name: string
+          _dorm_number: string
+        }
+        Returns: string
       }
       user_dorm_ids: { Args: { _user_id: string }; Returns: string[] }
     }
