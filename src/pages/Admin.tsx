@@ -30,6 +30,7 @@ import type { Database } from "@/integrations/supabase/types";
 
 type Dorm = Database["public"]["Tables"]["dorms"]["Row"];
 type Invite = Database["public"]["Tables"]["dorm_invites"]["Row"];
+type RepToken = Database["public"]["Tables"]["rep_tokens"]["Row"];
 
 const Admin = () => {
   const { user, isAdmin, isSystemAdmin, dorms: myDorms, refresh } = useAuth();
