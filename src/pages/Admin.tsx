@@ -64,16 +64,48 @@ const Admin = () => {
         });
         setMemberCounts(counts);
       }
+
+      if (isSystemAdmin) {
+        const { data: tokens } = await supabase
+          .from("rep_tokens")
+          .select("*")
+          .order("created_at", { ascending: false });
+        setRepTokens((tokens ?? []) as RepToken[]);
+      }
+
       setLoading(false);
     };
     load();
-  }, [user]);
+  }, [user, isSystemAdmin]);
 
   if (!isAdmin) return <Navigate to="/dashboard" replace />;
 
   const generateCode = (prefix: string) => {
     const rand = Math.random().toString(36).slice(2, 8).toUpperCase();
     return `${prefix.slice(0, 8).toUpperCase().replace(/[^A-Z0-9]/g, "")}-${rand}`;
+  };
+
+  const mintRepToken = async () => {
+    if (!user) return;
+    setRepTokenLoading(true);
+    const code = generateCode("REP");
+    const { data, error } = await supabase
+      .from("rep_tokens")
+      .insert({
+        code,
+        created_by: user.id,
+        note: repTokenNote.trim() || null,
+      })
+      .select()
+      .single();
+    setRepTokenLoading(false);
+    if (error || !data) {
+      toast.error(error?.message ?? "Could not mint key");
+      return;
+    }
+    setRepTokens((prev) => [data as RepToken, ...prev]);
+    setRepTokenNote("");
+    toast.success("Representative key created");
   };
 
   const createDorm = async (e: React.FormEvent<HTMLFormElement>) => {
