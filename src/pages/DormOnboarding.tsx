@@ -134,6 +134,32 @@ const DormOnboarding = () => {
     navigate("/dashboard", { replace: true });
   };
 
+  // ── Block admin: redeem block token ─────────────────────────────────────────
+  const handleBlockRedeem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    if (blockCode.trim().length < 4) {
+      toast.error("Enter a valid block key");
+      return;
+    }
+    setBlockLoading(true);
+
+    const { data, error } = await supabase.rpc("redeem_block_token", {
+      _code: blockCode.trim().toUpperCase(),
+    });
+
+    setBlockLoading(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    await refresh();
+    toast.success(`You're now the admin for Block ${data}`);
+    navigate("/admin", { replace: true });
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-parchment p-4">
       <div className="w-full max-w-md animate-scale-in">
