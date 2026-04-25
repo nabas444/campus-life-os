@@ -31,6 +31,7 @@ import type { Database } from "@/integrations/supabase/types";
 type Dorm = Database["public"]["Tables"]["dorms"]["Row"];
 type Invite = Database["public"]["Tables"]["dorm_invites"]["Row"];
 type RepToken = Database["public"]["Tables"]["rep_tokens"]["Row"];
+type BlockToken = Database["public"]["Tables"]["block_tokens"]["Row"];
 
 const Admin = () => {
   const { user, isAdmin, isSystemAdmin, dorms: myDorms, refresh } = useAuth();
@@ -38,11 +39,15 @@ const Admin = () => {
   const [invites, setInvites] = useState<Invite[]>([]);
   const [memberCounts, setMemberCounts] = useState<Record<string, number>>({});
   const [repTokens, setRepTokens] = useState<RepToken[]>([]);
+  const [blockTokens, setBlockTokens] = useState<BlockToken[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState<string | null>(null);
   const [repTokenNote, setRepTokenNote] = useState("");
   const [repTokenLoading, setRepTokenLoading] = useState(false);
+  const [blockName, setBlockName] = useState("");
+  const [blockTokenNote, setBlockTokenNote] = useState("");
+  const [blockTokenLoading, setBlockTokenLoading] = useState(false);
 
   useEffect(() => {
     if (!user) return;
