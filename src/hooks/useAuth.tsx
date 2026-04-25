@@ -20,6 +20,7 @@ interface AuthContextValue {
   primaryDormId: string | null;
   isAdmin: boolean;
   isSystemAdmin: boolean;
+  isBlockAdmin: boolean;
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
 }
