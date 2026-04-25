@@ -177,14 +177,18 @@ const DormOnboarding = () => {
 
         <Card className="border-border bg-card p-8 shadow-elegant">
           <Tabs defaultValue="member" className="w-full">
-            <TabsList className="mb-6 grid w-full grid-cols-2">
+            <TabsList className="mb-6 grid w-full grid-cols-3">
               <TabsTrigger value="member">
-                <Building2 className="mr-1.5 h-3.5 w-3.5" />
+                <Building2 className="mr-1 h-3.5 w-3.5" />
                 Member
               </TabsTrigger>
               <TabsTrigger value="rep">
-                <Crown className="mr-1.5 h-3.5 w-3.5" />
-                Representative
+                <Crown className="mr-1 h-3.5 w-3.5" />
+                Rep
+              </TabsTrigger>
+              <TabsTrigger value="block">
+                <Shield className="mr-1 h-3.5 w-3.5" />
+                Admin
               </TabsTrigger>
             </TabsList>
 
