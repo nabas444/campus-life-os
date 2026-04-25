@@ -1109,7 +1109,7 @@ export type Database = {
       user_dorm_ids: { Args: { _user_id: string }; Returns: string[] }
     }
     Enums: {
-      app_role: "student" | "dorm_admin" | "system_admin"
+      app_role: "student" | "dorm_admin" | "system_admin" | "block_admin"
       booking_status: "confirmed" | "cancelled" | "completed" | "no_show"
       borrow_status:
         | "requested"
@@ -1291,7 +1291,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["student", "dorm_admin", "system_admin"],
+      app_role: ["student", "dorm_admin", "system_admin", "block_admin"],
       booking_status: ["confirmed", "cancelled", "completed", "no_show"],
       borrow_status: [
         "requested",
