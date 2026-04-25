@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GraduationCap, Loader2, Building2, KeyRound, Crown } from "lucide-react";
+import { GraduationCap, Loader2, Building2, KeyRound, Crown, Shield } from "lucide-react";
 import { toast } from "sonner";
 
 const DormOnboarding = () => {
-  const { user, dorms, refresh, signOut, isSystemAdmin } = useAuth();
+  const { user, dorms, refresh, signOut, isSystemAdmin, isBlockAdmin } = useAuth();
   const navigate = useNavigate();
 
   // Member tab state
@@ -26,9 +26,14 @@ const DormOnboarding = () => {
   const [dormNumber, setDormNumber] = useState("");
   const [repLoading, setRepLoading] = useState(false);
 
+  // Block admin tab state
+  const [blockCode, setBlockCode] = useState("");
+  const [blockLoading, setBlockLoading] = useState(false);
+
   useEffect(() => {
     if (dorms.length > 0) navigate("/dashboard", { replace: true });
-  }, [dorms, navigate]);
+    else if (isBlockAdmin || isSystemAdmin) navigate("/admin", { replace: true });
+  }, [dorms, isBlockAdmin, isSystemAdmin, navigate]);
 
   // ── Member: redeem invite code ──────────────────────────────────────────────
   const handleMemberJoin = async (e: React.FormEvent) => {
