@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Copy, Crown, KeyRound, Loader2, Package, Plus, Users } from "lucide-react";
+import { Building2, Copy, Crown, KeyRound, Loader2, Package, Plus, Shield, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Navigate } from "react-router-dom";
 import type { Database } from "@/integrations/supabase/types";
@@ -31,6 +31,7 @@ import type { Database } from "@/integrations/supabase/types";
 type Dorm = Database["public"]["Tables"]["dorms"]["Row"];
 type Invite = Database["public"]["Tables"]["dorm_invites"]["Row"];
 type RepToken = Database["public"]["Tables"]["rep_tokens"]["Row"];
+type BlockToken = Database["public"]["Tables"]["block_tokens"]["Row"];
 
 const Admin = () => {
   const { user, isAdmin, isSystemAdmin, dorms: myDorms, refresh } = useAuth();
@@ -38,11 +39,15 @@ const Admin = () => {
   const [invites, setInvites] = useState<Invite[]>([]);
   const [memberCounts, setMemberCounts] = useState<Record<string, number>>({});
   const [repTokens, setRepTokens] = useState<RepToken[]>([]);
+  const [blockTokens, setBlockTokens] = useState<BlockToken[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState<string | null>(null);
   const [repTokenNote, setRepTokenNote] = useState("");
   const [repTokenLoading, setRepTokenLoading] = useState(false);
+  const [blockName, setBlockName] = useState("");
+  const [blockTokenNote, setBlockTokenNote] = useState("");
+  const [blockTokenLoading, setBlockTokenLoading] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -66,11 +71,12 @@ const Admin = () => {
       }
 
       if (isSystemAdmin) {
-        const { data: tokens } = await supabase
-          .from("rep_tokens")
-          .select("*")
-          .order("created_at", { ascending: false });
+        const [{ data: tokens }, { data: bTokens }] = await Promise.all([
+          supabase.from("rep_tokens").select("*").order("created_at", { ascending: false }),
+          supabase.from("block_tokens").select("*").order("created_at", { ascending: false }),
+        ]);
         setRepTokens((tokens ?? []) as RepToken[]);
+        setBlockTokens((bTokens ?? []) as BlockToken[]);
       }
 
       setLoading(false);
@@ -106,6 +112,35 @@ const Admin = () => {
     setRepTokens((prev) => [data as RepToken, ...prev]);
     setRepTokenNote("");
     toast.success("Representative key created");
+  };
+
+  const mintBlockToken = async () => {
+    if (!user) return;
+    if (blockName.trim().length < 1) {
+      toast.error("Enter the block name this admin will manage");
+      return;
+    }
+    setBlockTokenLoading(true);
+    const code = generateCode("BLK");
+    const { data, error } = await supabase
+      .from("block_tokens")
+      .insert({
+        code,
+        block: blockName.trim(),
+        created_by: user.id,
+        note: blockTokenNote.trim() || null,
+      })
+      .select()
+      .single();
+    setBlockTokenLoading(false);
+    if (error || !data) {
+      toast.error(error?.message ?? "Could not mint key");
+      return;
+    }
+    setBlockTokens((prev) => [data as BlockToken, ...prev]);
+    setBlockName("");
+    setBlockTokenNote("");
+    toast.success(`Block key created for "${data.block}"`);
   };
 
   const createDorm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -263,6 +298,89 @@ const Admin = () => {
                       </code>
                       {t.used_at ? (
                         <Badge variant="outline">Used</Badge>
+                      ) : (
+                        <Badge className="bg-accent text-accent-foreground">Available</Badge>
+                      )}
+                    </div>
+                    {t.note && (
+                      <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                        {t.note}
+                      </div>
+                    )}
+                  </div>
+                  {!t.used_at && (
+                    <Button size="icon" variant="ghost" onClick={() => copyCode(t.code)}>
+                      <Copy className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      )}
+
+      {isSystemAdmin && (
+        <Card className="mb-6 p-6">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
+                <Shield className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-semibold text-primary">Block keys</h3>
+                <p className="text-sm text-muted-foreground">
+                  Assign an admin to manage every dorm in a specific block
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="space-y-1.5" style={{ minWidth: 140 }}>
+              <Label htmlFor="block-name">Block name</Label>
+              <Input
+                id="block-name"
+                value={blockName}
+                onChange={(e) => setBlockName(e.target.value)}
+                placeholder="e.g. A"
+              />
+            </div>
+            <div className="flex-1 space-y-1.5" style={{ minWidth: 180 }}>
+              <Label htmlFor="block-note">Note (optional)</Label>
+              <Input
+                id="block-note"
+                value={blockTokenNote}
+                onChange={(e) => setBlockTokenNote(e.target.value)}
+                placeholder="e.g. For Jane Doe"
+              />
+            </div>
+            <Button onClick={mintBlockToken} variant="hero" disabled={blockTokenLoading}>
+              {blockTokenLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              <KeyRound className="h-4 w-4" /> Generate key
+            </Button>
+          </div>
+
+          {blockTokens.length > 0 && (
+            <div className="mt-5 space-y-2">
+              {blockTokens.slice(0, 6).map((t) => (
+                <div
+                  key={t.id}
+                  className="flex items-center justify-between gap-2 rounded-md border border-border bg-secondary/30 p-2.5"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <code
+                        className={`font-mono text-sm font-semibold ${
+                          t.used_at ? "text-muted-foreground line-through" : "text-primary"
+                        }`}
+                      >
+                        {t.code}
+                      </code>
+                      <Badge variant="outline" className="border-primary/30 text-primary">
+                        Block {t.block}
+                      </Badge>
+                      {t.used_at ? (
+                        <Badge variant="outline">Claimed</Badge>
                       ) : (
                         <Badge className="bg-accent text-accent-foreground">Available</Badge>
                       )}

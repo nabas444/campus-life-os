@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import Landing from "./Landing";
 
 const Index = () => {
-  const { user, loading, dorms, isSystemAdmin } = useAuth();
+  const { user, loading, dorms, isSystemAdmin, isBlockAdmin } = useAuth();
 
   if (loading) {
     return (
@@ -15,9 +15,12 @@ const Index = () => {
   }
 
   if (user) {
-    // System admins go straight to admin even without a dorm membership.
-    if (dorms.length === 0 && !isSystemAdmin) return <Navigate to="/onboarding/dorm" replace />;
-    return <Navigate to={isSystemAdmin && dorms.length === 0 ? "/admin" : "/dashboard"} replace />;
+    const adminWithoutDorm = (isSystemAdmin || isBlockAdmin) && dorms.length === 0;
+    // System & block admins go straight to admin even without a dorm membership.
+    if (dorms.length === 0 && !isSystemAdmin && !isBlockAdmin) {
+      return <Navigate to="/onboarding/dorm" replace />;
+    }
+    return <Navigate to={adminWithoutDorm ? "/admin" : "/dashboard"} replace />;
   }
 
   return <Landing />;

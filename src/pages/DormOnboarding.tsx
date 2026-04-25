@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GraduationCap, Loader2, Building2, KeyRound, Crown } from "lucide-react";
+import { GraduationCap, Loader2, Building2, KeyRound, Crown, Shield } from "lucide-react";
 import { toast } from "sonner";
 
 const DormOnboarding = () => {
-  const { user, dorms, refresh, signOut, isSystemAdmin } = useAuth();
+  const { user, dorms, refresh, signOut, isSystemAdmin, isBlockAdmin } = useAuth();
   const navigate = useNavigate();
 
   // Member tab state
@@ -26,9 +26,14 @@ const DormOnboarding = () => {
   const [dormNumber, setDormNumber] = useState("");
   const [repLoading, setRepLoading] = useState(false);
 
+  // Block admin tab state
+  const [blockCode, setBlockCode] = useState("");
+  const [blockLoading, setBlockLoading] = useState(false);
+
   useEffect(() => {
     if (dorms.length > 0) navigate("/dashboard", { replace: true });
-  }, [dorms, navigate]);
+    else if (isBlockAdmin || isSystemAdmin) navigate("/admin", { replace: true });
+  }, [dorms, isBlockAdmin, isSystemAdmin, navigate]);
 
   // ── Member: redeem invite code ──────────────────────────────────────────────
   const handleMemberJoin = async (e: React.FormEvent) => {
@@ -129,6 +134,32 @@ const DormOnboarding = () => {
     navigate("/dashboard", { replace: true });
   };
 
+  // ── Block admin: redeem block token ─────────────────────────────────────────
+  const handleBlockRedeem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    if (blockCode.trim().length < 4) {
+      toast.error("Enter a valid block key");
+      return;
+    }
+    setBlockLoading(true);
+
+    const { data, error } = await supabase.rpc("redeem_block_token", {
+      _code: blockCode.trim().toUpperCase(),
+    });
+
+    setBlockLoading(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    await refresh();
+    toast.success(`You're now the admin for Block ${data}`);
+    navigate("/admin", { replace: true });
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-parchment p-4">
       <div className="w-full max-w-md animate-scale-in">
@@ -146,14 +177,18 @@ const DormOnboarding = () => {
 
         <Card className="border-border bg-card p-8 shadow-elegant">
           <Tabs defaultValue="member" className="w-full">
-            <TabsList className="mb-6 grid w-full grid-cols-2">
+            <TabsList className="mb-6 grid w-full grid-cols-3">
               <TabsTrigger value="member">
-                <Building2 className="mr-1.5 h-3.5 w-3.5" />
+                <Building2 className="mr-1 h-3.5 w-3.5" />
                 Member
               </TabsTrigger>
               <TabsTrigger value="rep">
-                <Crown className="mr-1.5 h-3.5 w-3.5" />
-                Representative
+                <Crown className="mr-1 h-3.5 w-3.5" />
+                Rep
+              </TabsTrigger>
+              <TabsTrigger value="block">
+                <Shield className="mr-1 h-3.5 w-3.5" />
+                Admin
               </TabsTrigger>
             </TabsList>
 
@@ -264,6 +299,45 @@ const DormOnboarding = () => {
                 >
                   {repLoading && <Loader2 className="h-4 w-4 animate-spin" />}
                   Create my dorm
+                </Button>
+              </form>
+            </TabsContent>
+
+            {/* BLOCK ADMIN TAB */}
+            <TabsContent value="block">
+              <h1 className="mb-1 font-display text-2xl font-semibold text-primary">
+                Claim your block
+              </h1>
+              <p className="mb-5 text-sm text-muted-foreground">
+                Enter the block key issued by the campus admin. You'll manage every dorm in that block.
+              </p>
+              <form onSubmit={handleBlockRedeem} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="block-code" className="flex items-center gap-1.5">
+                    <KeyRound className="h-3.5 w-3.5" />
+                    Block key
+                  </Label>
+                  <Input
+                    id="block-code"
+                    value={blockCode}
+                    onChange={(e) => setBlockCode(e.target.value.toUpperCase())}
+                    placeholder="e.g. BLK-7K2P"
+                    className="font-mono uppercase tracking-wider"
+                    required
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    The block name (e.g. "A") is already attached to your key.
+                  </p>
+                </div>
+                <Button
+                  type="submit"
+                  variant="hero"
+                  size="lg"
+                  className="w-full"
+                  disabled={blockLoading}
+                >
+                  {blockLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Claim my block
                 </Button>
               </form>
             </TabsContent>

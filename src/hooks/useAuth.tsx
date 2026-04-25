@@ -20,6 +20,7 @@ interface AuthContextValue {
   primaryDormId: string | null;
   isAdmin: boolean;
   isSystemAdmin: boolean;
+  isBlockAdmin: boolean;
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -97,8 +98,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         roles,
         dorms,
         primaryDormId: dorms[0]?.dorm_id ?? null,
-        isAdmin: roles.includes("dorm_admin") || roles.includes("system_admin"),
+        isAdmin: roles.includes("dorm_admin") || roles.includes("system_admin") || roles.includes("block_admin"),
         isSystemAdmin: roles.includes("system_admin"),
+        isBlockAdmin: roles.includes("block_admin"),
         signOut,
         refresh,
       }}
