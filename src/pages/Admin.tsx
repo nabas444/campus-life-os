@@ -320,6 +320,89 @@ const Admin = () => {
         </Card>
       )}
 
+      {isSystemAdmin && (
+        <Card className="mb-6 p-6">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
+                <Shield className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-semibold text-primary">Block keys</h3>
+                <p className="text-sm text-muted-foreground">
+                  Assign an admin to manage every dorm in a specific block
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="space-y-1.5" style={{ minWidth: 140 }}>
+              <Label htmlFor="block-name">Block name</Label>
+              <Input
+                id="block-name"
+                value={blockName}
+                onChange={(e) => setBlockName(e.target.value)}
+                placeholder="e.g. A"
+              />
+            </div>
+            <div className="flex-1 space-y-1.5" style={{ minWidth: 180 }}>
+              <Label htmlFor="block-note">Note (optional)</Label>
+              <Input
+                id="block-note"
+                value={blockTokenNote}
+                onChange={(e) => setBlockTokenNote(e.target.value)}
+                placeholder="e.g. For Jane Doe"
+              />
+            </div>
+            <Button onClick={mintBlockToken} variant="hero" disabled={blockTokenLoading}>
+              {blockTokenLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              <KeyRound className="h-4 w-4" /> Generate key
+            </Button>
+          </div>
+
+          {blockTokens.length > 0 && (
+            <div className="mt-5 space-y-2">
+              {blockTokens.slice(0, 6).map((t) => (
+                <div
+                  key={t.id}
+                  className="flex items-center justify-between gap-2 rounded-md border border-border bg-secondary/30 p-2.5"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <code
+                        className={`font-mono text-sm font-semibold ${
+                          t.used_at ? "text-muted-foreground line-through" : "text-primary"
+                        }`}
+                      >
+                        {t.code}
+                      </code>
+                      <Badge variant="outline" className="border-primary/30 text-primary">
+                        Block {t.block}
+                      </Badge>
+                      {t.used_at ? (
+                        <Badge variant="outline">Claimed</Badge>
+                      ) : (
+                        <Badge className="bg-accent text-accent-foreground">Available</Badge>
+                      )}
+                    </div>
+                    {t.note && (
+                      <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                        {t.note}
+                      </div>
+                    )}
+                  </div>
+                  {!t.used_at && (
+                    <Button size="icon" variant="ghost" onClick={() => copyCode(t.code)}>
+                      <Copy className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      )}
+
       {loading ? (
         <div className="flex justify-center py-16">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
