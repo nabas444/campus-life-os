@@ -47,6 +47,66 @@ export type Database = {
         }
         Relationships: []
       }
+      block_assignments: {
+        Row: {
+          assigned_by: string | null
+          block: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          block: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          block?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      block_tokens: {
+        Row: {
+          block: string
+          code: string
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          note: string | null
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          block: string
+          code: string
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          note?: string | null
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          block?: string
+          code?: string
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          note?: string | null
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: []
+      }
       borrow_requests: {
         Row: {
           borrowed_at: string | null
@@ -1089,6 +1149,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_block_admin_of: {
+        Args: { _block: string; _user_id: string }
+        Returns: boolean
+      }
       is_dorm_admin_of: {
         Args: { _dorm_id: string; _user_id: string }
         Returns: boolean
@@ -1097,6 +1161,7 @@ export type Database = {
         Args: { _dorm_id: string; _user_id: string }
         Returns: boolean
       }
+      redeem_block_token: { Args: { _code: string }; Returns: string }
       redeem_rep_token: {
         Args: {
           _block: string
