@@ -71,11 +71,12 @@ const Admin = () => {
       }
 
       if (isSystemAdmin) {
-        const { data: tokens } = await supabase
-          .from("rep_tokens")
-          .select("*")
-          .order("created_at", { ascending: false });
+        const [{ data: tokens }, { data: bTokens }] = await Promise.all([
+          supabase.from("rep_tokens").select("*").order("created_at", { ascending: false }),
+          supabase.from("block_tokens").select("*").order("created_at", { ascending: false }),
+        ]);
         setRepTokens((tokens ?? []) as RepToken[]);
+        setBlockTokens((bTokens ?? []) as BlockToken[]);
       }
 
       setLoading(false);
