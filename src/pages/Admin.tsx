@@ -114,6 +114,35 @@ const Admin = () => {
     toast.success("Representative key created");
   };
 
+  const mintBlockToken = async () => {
+    if (!user) return;
+    if (blockName.trim().length < 1) {
+      toast.error("Enter the block name this admin will manage");
+      return;
+    }
+    setBlockTokenLoading(true);
+    const code = generateCode("BLK");
+    const { data, error } = await supabase
+      .from("block_tokens")
+      .insert({
+        code,
+        block: blockName.trim(),
+        created_by: user.id,
+        note: blockTokenNote.trim() || null,
+      })
+      .select()
+      .single();
+    setBlockTokenLoading(false);
+    if (error || !data) {
+      toast.error(error?.message ?? "Could not mint key");
+      return;
+    }
+    setBlockTokens((prev) => [data as BlockToken, ...prev]);
+    setBlockName("");
+    setBlockTokenNote("");
+    toast.success(`Block key created for "${data.block}"`);
+  };
+
   const createDorm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
